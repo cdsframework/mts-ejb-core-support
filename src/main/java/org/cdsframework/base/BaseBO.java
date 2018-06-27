@@ -2595,6 +2595,18 @@ public abstract class BaseBO<T extends BaseDTO> {
         // Check the user's authority to inoke
         propertyBagDTO.put("checkAuthSrc", getClass().getSimpleName());
         getSecurityMGRLocal().checkAuthority(PermissionType.SELECT, baseDTO.getClass(), sessionDTO, propertyBagDTO);
+        
+        // Check if database prefixes are in use
+        
+        Boolean useDBPrefix = ObjectUtils.objectToBoolean(getPropertyMGRLocal().get("JASPER_REPORTS_USE_DB_PREFIX"));
+        useDBPrefix = (useDBPrefix != null) ? useDBPrefix : Boolean.FALSE;
+        logger.info(METHODNAME, "use DB Prefix ", useDBPrefix);
+        
+        if (useDBPrefix) {
+            String prefix = getDao().getDatabaseType().name().toLowerCase() + "/";
+            reportPath = prefix + reportPath;
+        }
+        logger.info(METHODNAME, " report path ", reportPath);
 
         byte[] byteArray = new String().getBytes();
         String reportType = null;
